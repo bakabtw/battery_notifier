@@ -4,8 +4,14 @@ from plyer import notification
 
 
 def battery_status():
-    currentCapacity = int(open("/sys/class/power_supply/BAT1/capacity", "r").readline().strip())
-    batteryStatus = open("/sys/class/power_supply/BAT1/status", "r").readline().strip()
+    currentCapacity = 0
+    batteryStatus = "N/A"
+
+    try:
+        currentCapacity = int(open("/sys/class/power_supply/BAT1/capacity", "r").readline().strip())
+        batteryStatus = open("/sys/class/power_supply/BAT1/status", "r").readline().strip()
+    except FileNotFoundError:
+        print("Looks like you OS isn't supported or you don't have permission to access battery status")
 
     return currentCapacity, batteryStatus
 
