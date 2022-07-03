@@ -23,7 +23,7 @@ def main():
     high_charge = 70
     delay_interval = 300
 
-    parser = argparse.ArgumentParser(prog="battery_notifier.py", description="Process some integers")
+    parser = argparse.ArgumentParser(prog="battery_notifier.py", description="Simple battery level notifier")
     parser.add_argument("--min", help=f"Min battery level. Default: {low_charge}", type=int, default=low_charge)
     parser.add_argument("--max", help=f"Max battery level. Default: {high_charge}", type=int, default=high_charge)
     parser.add_argument("--delay", help=f"Delay between checks. Default: {delay_interval}", type=int,
