@@ -4,74 +4,75 @@ from plyer import notification
 import argparse
 
 
-def battery_status():
-    currentCapacity = 0
-    batteryStatus = "N/A"
+def get_battery_status():
+    current_capacity = 0
+    battery_status = "N/A"
 
     try:
-        currentCapacity = int(open("/sys/class/power_supply/BAT1/capacity", "r").readline().strip())
-        batteryStatus = open("/sys/class/power_supply/BAT1/status", "r").readline().strip()
+        current_capacity = int(open("/sys/class/power_supply/BAT1/capacity", "r").readline().strip())
+        battery_status = open("/sys/class/power_supply/BAT1/status", "r").readline().strip()
     except FileNotFoundError:
         print("Looks like you OS isn't supported or you don't have permission to access battery status")
 
-    return currentCapacity, batteryStatus
+    return current_capacity, battery_status
 
 
 def main():
     # Default values
-    lowCharge = 30
-    highCharge = 70
-    remindInterval = 300
+    low_charge = 30
+    high_charge = 70
+    delay_interval = 300
 
     parser = argparse.ArgumentParser(prog="battery_notifier.py", description="Process some integers")
-    parser.add_argument("--min", help=f"Min battery level. Default: {lowCharge}", type=int, default=lowCharge)
-    parser.add_argument("--max", help=f"Max battery level. Default: {highCharge}", type=int, default=highCharge)
-    parser.add_argument("--delay", help=f"Delay between checks. Default: {remindInterval}", type=int, default=remindInterval)
+    parser.add_argument("--min", help=f"Min battery level. Default: {low_charge}", type=int, default=low_charge)
+    parser.add_argument("--max", help=f"Max battery level. Default: {high_charge}", type=int, default=high_charge)
+    parser.add_argument("--delay", help=f"Delay between checks. Default: {delay_interval}", type=int,
+                        default=delay_interval)
     args = parser.parse_args()
 
-    lowCharge, highCharge, remindInterval = args.min, args.max, args.delay
+    low_charge, high_charge, delay_interval = args.min, args.max, args.delay
 
-    if lowCharge not in range(1, 100):
+    if low_charge not in range(1, 100):
         print("Battery min level is out of range 1-100",
-              f"Current value: {lowCharge}",
+              f"Current value: {low_charge}",
               sep="\n"
               )
         exit()
-    if highCharge not in range(1, 100):
+    if high_charge not in range(1, 100):
         print(f"Battery max level is out of range 1-100",
-              f"Current value: {highCharge}",
+              f"Current value: {high_charge}",
               sep="\n"
               )
         exit()
-    if lowCharge >= highCharge:
+    if low_charge >= high_charge:
         print("Battery max level cannot be higher than battery min level",
-              f"Min charger level: {lowCharge}",
-              f"Max charge level: {highCharge}",
+              f"Min charger level: {low_charge}",
+              f"Max charge level: {high_charge}",
               sep="\n"
               )
         exit()
-    if remindInterval < 1:
+    if delay_interval < 1:
         print("Delay between checks should be >= 1 sec")
 
     while True:
-        currentCapacity, batteryStatus = battery_status()
+        current_capacity, battery_status = get_battery_status()
 
-        if batteryStatus == "Discharging" and currentCapacity < lowCharge:
+        if battery_status == "Discharging" and current_capacity < low_charge:
             notification.notify(
-                title = "Battery low",
-                message = "Please connect the charger",
-                app_icon = None,
-                timeout = 5
+                title="Battery low",
+                message="Please connect the charger",
+                app_icon=None,
+                timeout=5
             )
-        elif batteryStatus == "Charging" and currentCapacity > highCharge:
+        elif battery_status == "Charging" and current_capacity > high_charge:
             notification.notify(
-                title = "Battery charged",
-                message = "Please disconnect the charger",
-                app_icon = None,
-                timeout = 5
+                title="Battery charged",
+                message="Please disconnect the charger",
+                app_icon=None,
+                timeout=5
             )
 
-        time.sleep(remindInterval)
+        time.sleep(delay_interval)
 
 
 if __name__ == "__main__":
