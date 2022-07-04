@@ -13,3 +13,5 @@ This is a simple python script for notifying the user when it's time to connect/
       --max MAX      Max battery level. Default: 70
       --delay DELAY  Delay between checks. Default: 300
 
+# Requirements
+- plyer
